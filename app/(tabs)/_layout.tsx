@@ -1,3 +1,4 @@
+import TabBar from "@/components/TabBar";
 import { COLORS, getColorWithOpacity } from "@/constants/Colors";
 import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
@@ -6,6 +7,7 @@ import { StyleSheet } from "react-native";
 export default function TabLayout() {
 	return (
 		<Tabs
+			tabBar={(props) => <TabBar {...props} />}
 			screenOptions={{
 				headerShown: false,
 				tabBarActiveTintColor: COLORS.primary,
@@ -15,6 +17,7 @@ export default function TabLayout() {
 					height: 80,
 					position: "absolute",
 					borderTopWidth: 0,
+					paddingBottom: 30,
 				},
 				tabBarBackground: () => (
 					<BlurView
