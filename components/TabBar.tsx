@@ -1,4 +1,4 @@
-import { COLORS } from "@/constants/Colors";
+import { COLORS, getColorWithOpacity } from "@/constants/Colors";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import TabBarButton from "./TabBarButton";
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		backgroundColor: COLORS.surface,
+		backgroundColor: getColorWithOpacity(COLORS.secondary, 0.9),
 		marginHorizontal: 20,
 		paddingVertical: 10,
 		borderRadius: 25,

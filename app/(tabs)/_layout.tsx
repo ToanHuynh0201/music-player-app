@@ -1,6 +1,5 @@
 import TabBar from "@/components/TabBar";
 import { COLORS, getColorWithOpacity } from "@/constants/Colors";
-import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet } from "react-native";
@@ -19,13 +18,6 @@ export default function TabLayout() {
 					borderTopWidth: 0,
 					paddingBottom: 30,
 				},
-				tabBarBackground: () => (
-					<BlurView
-						tint="dark"
-						intensity={100}
-						style={styles.blurContainer}
-					/>
-				),
 				tabBarLabelStyle: {
 					fontSize: 12,
 					fontWeight: "500",
