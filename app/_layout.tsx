@@ -18,18 +18,7 @@ const StackLayout = () => {
 					backgroundColor: COLORS.background,
 				},
 			}}
-		>
-			<Stack.Screen
-				name="(tabs)"
-				options={{
-					headerShown: false,
-					contentStyle: {
-						paddingTop: insets.top,
-						backgroundColor: COLORS.background,
-					},
-				}}
-			/>
-		</Stack>
+		></Stack>
 	);
 };
 
