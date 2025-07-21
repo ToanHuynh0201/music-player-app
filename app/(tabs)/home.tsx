@@ -1,11 +1,13 @@
-import { COLOR_VARIANTS, COLORS, GRADIENTS } from "@/constants/Colors";
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import FeaturedPlaylists from "@/components/FeaturedPlaylists";
+import Genre from "@/components/Genre";
+import HomeHeader from "@/components/HomeHeader";
+import PopularArtists from "@/components/PopularArtists";
+import RecentlyPlayed from "@/components/RecentlyPlayed";
+import { COLOR_VARIANTS, COLORS } from "@/constants/Colors";
 import React, { useEffect, useState } from "react";
 import {
 	Dimensions,
 	FlatList,
-	Image,
 	ScrollView,
 	StatusBar,
 	StyleSheet,
@@ -86,7 +88,7 @@ const SAMPLE_DATA = {
 		{ id: "2", name: "Hip-Hop", color: "#4ECDC4" },
 		{ id: "3", name: "Rock", color: "#45B7D1" },
 		{ id: "4", name: "Jazz", color: "#96CEB4" },
-		{ id: "5", name: "Classical", color: "#FFEAA7" },
+		{ id: "5", name: "Classical", color: "#5b1b96" },
 		{ id: "6", name: "Electronic", color: "#DDA0DD" },
 	],
 };
@@ -116,31 +118,16 @@ const Home = () => {
 				contentContainerStyle={styles.scrollContent}
 			>
 				{/* Header */}
-				<LinearGradient
-					colors={GRADIENTS.playerBackground}
-					style={styles.header}
-				>
-					<View style={styles.headerContent}>
-						<View>
-							<Text style={styles.greeting}>{greeting}</Text>
-							<Text style={styles.userName}>Music Lover</Text>
-						</View>
-						<TouchableOpacity style={styles.profileButton}>
-							<Ionicons
-								name="person-circle"
-								size={32}
-								color={COLORS.textPrimary}
-							/>
-						</TouchableOpacity>
-					</View>
-				</LinearGradient>
+				<HomeHeader />
 
 				{/* Quick Access Genres */}
 				<View style={styles.section}>
 					<Text style={styles.sectionTitle}>Thể loại</Text>
 					<FlatList
 						data={SAMPLE_DATA.genres}
-						renderItem={renderGenre}
+						renderItem={(item) => (
+							<Genre genre={SAMPLE_DATA.genres[item.index]} />
+						)}
 						keyExtractor={(item) => item.id}
 						numColumns={2}
 						scrollEnabled={false}
@@ -158,7 +145,11 @@ const Home = () => {
 					</View>
 					<FlatList
 						data={SAMPLE_DATA.recentlyPlayed}
-						renderItem={renderRecentlyPlayed}
+						renderItem={(item) => (
+							<RecentlyPlayed
+								data={SAMPLE_DATA.recentlyPlayed[item.index]}
+							/>
+						)}
 						keyExtractor={(item) => item.id}
 						horizontal
 						showsHorizontalScrollIndicator={false}
@@ -178,7 +169,11 @@ const Home = () => {
 					</View>
 					<FlatList
 						data={SAMPLE_DATA.popularArtists}
-						renderItem={renderArtist}
+						renderItem={(item) => (
+							<PopularArtists
+								data={SAMPLE_DATA.popularArtists[item.index]}
+							/>
+						)}
 						keyExtractor={(item) => item.id}
 						horizontal
 						showsHorizontalScrollIndicator={false}
@@ -198,7 +193,11 @@ const Home = () => {
 					</View>
 					<FlatList
 						data={SAMPLE_DATA.featuredPlaylists}
-						renderItem={renderPlaylist}
+						renderItem={(item) => (
+							<FeaturedPlaylists
+								data={SAMPLE_DATA.featuredPlaylists[item.index]}
+							/>
+						)}
 						keyExtractor={(item) => item.id}
 						horizontal
 						showsHorizontalScrollIndicator={false}
@@ -213,56 +212,6 @@ const Home = () => {
 	);
 };
 
-const renderRecentlyPlayed = ({ item }: any) => (
-	<TouchableOpacity style={styles.recentItem} activeOpacity={0.7}>
-		<Image source={{ uri: item.image }} style={styles.recentImage} />
-		<View style={styles.recentInfo}>
-			<Text style={styles.recentTitle} numberOfLines={1}>
-				{item.title}
-			</Text>
-			<Text style={styles.recentArtist} numberOfLines={1}>
-				{item.artist}
-			</Text>
-		</View>
-		<TouchableOpacity style={styles.playButton}>
-			<Ionicons name="play" size={16} color={COLORS.background} />
-		</TouchableOpacity>
-	</TouchableOpacity>
-);
-
-const renderArtist = ({ item }: any) => (
-	<TouchableOpacity style={styles.artistItem} activeOpacity={0.7}>
-		<Image source={{ uri: item.image }} style={styles.artistImage} />
-		<Text style={styles.artistName} numberOfLines={1}>
-			{item.name}
-		</Text>
-		<Text style={styles.artistFollowers}>{item.followers} followers</Text>
-	</TouchableOpacity>
-);
-
-const renderPlaylist = ({ item }: any) => (
-	<TouchableOpacity style={styles.playlistItem} activeOpacity={0.7}>
-		<Image source={{ uri: item.image }} style={styles.playlistImage} />
-		<View style={styles.playlistInfo}>
-			<Text style={styles.playlistTitle} numberOfLines={1}>
-				{item.title}
-			</Text>
-			<Text style={styles.playlistDescription} numberOfLines={2}>
-				{item.description}
-			</Text>
-			<Text style={styles.playlistSongs}>{item.songs} bài hát</Text>
-		</View>
-	</TouchableOpacity>
-);
-
-const renderGenre = ({ item }: any) => (
-	<TouchableOpacity
-		style={[styles.genreItem, { backgroundColor: item.color }]}
-		activeOpacity={0.8}
-	>
-		<Text style={styles.genreText}>{item.name}</Text>
-	</TouchableOpacity>
-);
 export default Home;
 
 const styles = StyleSheet.create({
