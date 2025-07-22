@@ -70,16 +70,7 @@ const index = () => {
 				>
 					{/* Music Icon */}
 					<View style={styles.musicIcon}>
-						<View style={styles.circle} />
-						<View style={styles.line} />
-						<Animated.View
-							style={[
-								styles.musicNote,
-								{
-									transform: [{ translateY: musicNoteAnim }],
-								},
-							]}
-						>
+						<Animated.View style={[styles.musicNote]}>
 							<Text style={styles.noteText}>♪</Text>
 						</Animated.View>
 					</View>
@@ -189,11 +180,10 @@ const styles = StyleSheet.create({
 	},
 	musicNote: {
 		position: "absolute",
-		top: 10,
-		right: 5,
+		fontSize: 250,
 	},
 	noteText: {
-		fontSize: 24,
+		fontSize: 200,
 		color: COLORS.accent,
 		fontWeight: "bold",
 	},

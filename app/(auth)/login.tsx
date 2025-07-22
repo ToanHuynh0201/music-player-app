@@ -1,3 +1,4 @@
+import CustomTextInput from "@/components/CustomTextInput";
 import { COLORS, GRADIENTS, getColorWithOpacity } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -11,7 +12,6 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";
@@ -133,54 +133,30 @@ const LoginScreen = () => {
 						{/* Form */}
 						<View style={styles.form}>
 							{/* Email Input */}
-							<View style={styles.inputContainer}>
-								<Text style={styles.inputLabel}>Email</Text>
-								<View style={styles.inputWrapper}>
-									<TextInput
-										style={styles.input}
-										value={email}
-										onChangeText={setEmail}
-										placeholder="Enter your email"
-										placeholderTextColor={
-											COLORS.textSecondary
-										}
-										keyboardType="email-address"
-										autoCapitalize="none"
-										autoCorrect={false}
-									/>
-								</View>
-							</View>
+							<CustomTextInput
+								label="Email"
+								value={email}
+								onChangeText={setEmail}
+								placeholder="Enter your email"
+								keyboardType="email-address"
+								autoCapitalize="none"
+								autoCorrect={false}
+							/>
 
 							{/* Password Input */}
-							<View style={styles.inputContainer}>
-								<Text style={styles.inputLabel}>Password</Text>
-								<View style={styles.inputWrapper}>
-									<TextInput
-										style={[
-											styles.input,
-											{ paddingRight: 50 },
-										]}
-										value={password}
-										onChangeText={setPassword}
-										placeholder="Enter your password"
-										placeholderTextColor={
-											COLORS.textSecondary
-										}
-										secureTextEntry={!showPassword}
-										autoCapitalize="none"
-									/>
-									<TouchableOpacity
-										style={styles.eyeButton}
-										onPress={() =>
-											setShowPassword(!showPassword)
-										}
-									>
-										<Text style={styles.eyeText}>
-											{showPassword ? "👁️" : "👁️‍🗨️"}
-										</Text>
-									</TouchableOpacity>
-								</View>
-							</View>
+							<CustomTextInput
+								label="Password"
+								value={password}
+								onChangeText={setPassword}
+								placeholder="Enter your password"
+								hasPasswordToggle={true}
+								showPassword={showPassword}
+								onTogglePassword={() =>
+									setShowPassword(!showPassword)
+								}
+								autoCapitalize="none"
+								containerStyle={{ marginBottom: 10 }} // Custom style nếu cần
+							/>
 
 							{/* Forgot Password */}
 							<TouchableOpacity onPress={handleForgotPassword}>

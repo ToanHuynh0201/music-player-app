@@ -25,7 +25,7 @@ const StackLayout = () => {
 export default function RootLayout() {
 	return (
 		<SafeAreaProvider>
-			<StatusBar style="light" backgroundColor={COLORS.background} />
+			<StatusBar style="light" />
 			<StackLayout></StackLayout>
 		</SafeAreaProvider>
 	);

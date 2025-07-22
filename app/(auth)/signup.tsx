@@ -1,3 +1,4 @@
+import CustomTextInput from "@/components/CustomTextInput";
 import { COLORS, GRADIENTS, getColorWithOpacity } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -11,14 +12,13 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
-const SignUpScreen: React.FC = () => {
+const SignUpScreen = () => {
 	const [fullName, setFullName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -177,161 +177,63 @@ const SignUpScreen: React.FC = () => {
 						{/* Form */}
 						<View style={styles.form}>
 							{/* Full Name Input */}
-							<View style={styles.inputContainer}>
-								<Text style={styles.inputLabel}>Full Name</Text>
-								<View style={styles.inputWrapper}>
-									<TextInput
-										style={styles.input}
-										value={fullName}
-										onChangeText={setFullName}
-										placeholder="Enter your full name"
-										placeholderTextColor={
-											COLORS.textSecondary
-										}
-										autoCapitalize="words"
-										autoCorrect={false}
-									/>
-								</View>
-							</View>
+							<CustomTextInput
+								label="Full Name"
+								value={fullName}
+								onChangeText={setFullName}
+								placeholder="Enter your full name"
+								autoCapitalize="words"
+								autoCorrect={false}
+							/>
 
 							{/* Email Input */}
-							<View style={styles.inputContainer}>
-								<Text style={styles.inputLabel}>Email</Text>
-								<View style={styles.inputWrapper}>
-									<TextInput
-										style={styles.input}
-										value={email}
-										onChangeText={setEmail}
-										placeholder="Enter your email"
-										placeholderTextColor={
-											COLORS.textSecondary
-										}
-										keyboardType="email-address"
-										autoCapitalize="none"
-										autoCorrect={false}
-									/>
-								</View>
-							</View>
+							<CustomTextInput
+								label="Email"
+								value={email}
+								onChangeText={setEmail}
+								placeholder="Enter your email"
+								keyboardType="email-address"
+								autoCapitalize="none"
+								autoCorrect={false}
+							/>
 
 							{/* Password Input */}
-							<View style={styles.inputContainer}>
-								<Text style={styles.inputLabel}>Password</Text>
-								<View style={styles.inputWrapper}>
-									<TextInput
-										style={[
-											styles.input,
-											{ paddingRight: 50 },
-										]}
-										value={password}
-										onChangeText={setPassword}
-										placeholder="Create a password"
-										placeholderTextColor={
-											COLORS.textSecondary
-										}
-										secureTextEntry={!showPassword}
-										autoCapitalize="none"
-									/>
-									<TouchableOpacity
-										style={styles.eyeButton}
-										onPress={() =>
-											setShowPassword(!showPassword)
-										}
-									>
-										<Text style={styles.eyeText}>
-											{showPassword ? "👁️" : "👁️‍🗨️"}
-										</Text>
-									</TouchableOpacity>
-								</View>
-
-								{/* Password Strength Indicator */}
-								{password.length > 0 && (
-									<View style={styles.passwordStrength}>
-										<View style={styles.strengthBar}>
-											<View
-												style={[
-													styles.strengthFill,
-													{
-														width: `${
-															(passwordStrength.strength /
-																3) *
-															100
-														}%`,
-														backgroundColor:
-															passwordStrength.color,
-													},
-												]}
-											/>
-										</View>
-										<Text
-											style={[
-												styles.strengthText,
-												{
-													color: passwordStrength.color,
-												},
-											]}
-										>
-											{passwordStrength.text}
-										</Text>
-									</View>
-								)}
-							</View>
+							<CustomTextInput
+								label="Password"
+								value={password}
+								onChangeText={setPassword}
+								placeholder="Create a password"
+								hasPasswordToggle={true}
+								showPassword={showPassword}
+								onTogglePassword={() =>
+									setShowPassword(!showPassword)
+								}
+								autoCapitalize="none"
+							/>
 
 							{/* Confirm Password Input */}
-							<View style={styles.inputContainer}>
-								<Text style={styles.inputLabel}>
-									Confirm Password
-								</Text>
-								<View style={styles.inputWrapper}>
-									<TextInput
-										style={[
-											styles.input,
-											{ paddingRight: 50 },
-										]}
-										value={confirmPassword}
-										onChangeText={setConfirmPassword}
-										placeholder="Confirm your password"
-										placeholderTextColor={
-											COLORS.textSecondary
-										}
-										secureTextEntry={!showConfirmPassword}
-										autoCapitalize="none"
-									/>
-									<TouchableOpacity
-										style={styles.eyeButton}
-										onPress={() =>
-											setShowConfirmPassword(
-												!showConfirmPassword
-											)
-										}
-									>
-										<Text style={styles.eyeText}>
-											{showConfirmPassword ? "👁️" : "👁️‍🗨️"}
-										</Text>
-									</TouchableOpacity>
-								</View>
-
-								{/* Password Match Indicator */}
-								{confirmPassword.length > 0 && (
-									<View style={styles.passwordMatch}>
-										<Text
-											style={[
-												styles.matchText,
-												{
-													color:
-														password ===
-														confirmPassword
-															? COLORS.success
-															: COLORS.error,
-												},
-											]}
-										>
-											{password === confirmPassword
-												? "✓ Passwords match"
-												: "✗ Passwords do not match"}
-										</Text>
-									</View>
-								)}
-							</View>
+							<CustomTextInput
+								label="Confirm Password"
+								value={confirmPassword}
+								onChangeText={setConfirmPassword}
+								placeholder="Confirm your password"
+								hasPasswordToggle={true}
+								showPassword={showConfirmPassword}
+								onTogglePassword={() =>
+									setShowConfirmPassword(!showConfirmPassword)
+								}
+								autoCapitalize="none"
+								isValid={
+									confirmPassword.length > 0 &&
+									password === confirmPassword
+								}
+								errorMessage={
+									confirmPassword.length > 0 &&
+									password !== confirmPassword
+										? "Passwords do not match"
+										: undefined
+								}
+							/>
 
 							{/* Terms Agreement */}
 							<TouchableOpacity
