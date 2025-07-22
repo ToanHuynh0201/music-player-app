@@ -4,6 +4,7 @@ import HomeHeader from "@/components/HomeHeader";
 import PopularArtists from "@/components/PopularArtists";
 import RecentlyPlayed from "@/components/RecentlyPlayed";
 import { COLOR_VARIANTS, COLORS } from "@/constants/Colors";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
 	Dimensions,
@@ -95,7 +96,7 @@ const SAMPLE_DATA = {
 
 const Home = () => {
 	const [greeting, setGreeting] = useState("");
-
+	const router = useRouter();
 	useEffect(() => {
 		const hour = new Date().getHours();
 		if (hour < 12) {
@@ -106,6 +107,10 @@ const Home = () => {
 			setGreeting("Chào buổi tối");
 		}
 	}, []);
+
+	const onProfilePress = () => {
+		router.navigate("/(tabs)/profile");
+	};
 	return (
 		<View style={styles.container}>
 			<StatusBar
@@ -118,7 +123,7 @@ const Home = () => {
 				contentContainerStyle={styles.scrollContent}
 			>
 				{/* Header */}
-				<HomeHeader />
+				<HomeHeader onProfilePress={onProfilePress} />
 
 				{/* Quick Access Genres */}
 				<View style={styles.section}>

@@ -47,11 +47,7 @@ const TabBar = ({ state, descriptors, navigation }: any) => {
 						onLongPress={onLongPress}
 						isFocused={isFocused}
 						routeName={route.name}
-						color={
-							isFocused
-								? COLORS.textPrimary
-								: COLORS.textSecondary
-						}
+						color={isFocused ? COLORS.primary : COLORS.textPrimary}
 						label={label}
 					/>
 				);

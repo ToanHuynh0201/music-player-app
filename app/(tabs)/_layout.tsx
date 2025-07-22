@@ -45,6 +45,13 @@ export default function TabLayout() {
 					sceneStyle: { backgroundColor: COLORS.background },
 				}}
 			></Tabs.Screen>
+			<Tabs.Screen
+				name="profile"
+				options={{
+					title: "Profile",
+					sceneStyle: { backgroundColor: COLORS.background },
+				}}
+			></Tabs.Screen>
 		</Tabs>
 	);
 }

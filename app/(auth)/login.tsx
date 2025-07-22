@@ -43,35 +43,36 @@ const LoginScreen = () => {
 	}, []);
 
 	const handleLogin = async () => {
-		if (!email || !password) {
-			Alert.alert("Error", "Please fill in all fields");
-			return;
-		}
+		// if (!email || !password) {
+		// 	Alert.alert("Error", "Please fill in all fields");
+		// 	return;
+		// }
 
-		if (!email.includes("@")) {
-			Alert.alert("Error", "Please enter a valid email address");
-			return;
-		}
+		// if (!email.includes("@")) {
+		// 	Alert.alert("Error", "Please enter a valid email address");
+		// 	return;
+		// }
 
-		setIsLoading(true);
+		// setIsLoading(true);
 
-		// Simulate API call
-		setTimeout(() => {
-			setIsLoading(false);
-			// Simple validation (in real app, this would be actual authentication)
-			if (
-				email.toLowerCase().includes("test") ||
-				email.toLowerCase().includes("demo")
-			) {
-				// Navigate to main app (you can replace this with your main tabs)
-				router.replace("/(tabs)/home");
-			} else {
-				Alert.alert(
-					"Login Failed",
-					'Please use a test email or try "demo@example.com"'
-				);
-			}
-		}, 1500);
+		// // Simulate API call
+		// setTimeout(() => {
+		// 	setIsLoading(false);
+		// 	// Simple validation (in real app, this would be actual authentication)
+		// 	if (
+		// 		email.toLowerCase().includes("test") ||
+		// 		email.toLowerCase().includes("demo")
+		// 	) {
+		// 		// Navigate to main app (you can replace this with your main tabs)
+		// 		router.replace("/(tabs)/home");
+		// 	} else {
+		// 		Alert.alert(
+		// 			"Login Failed",
+		// 			'Please use a test email or try "demo@example.com"'
+		// 		);
+		// 	}
+		// }, 1500);
+		router.replace("/(tabs)/home");
 	};
 
 	const handleForgotPassword = () => {

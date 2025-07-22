@@ -8,7 +8,7 @@ export interface IconProps {
 	size?: number;
 }
 
-export type TabRouteNames = "home" | "search" | "library";
+export type TabRouteNames = "home" | "search" | "library" | "profile";
 
 export type IconsType = {
 	[K in TabRouteNames]: (props: IconProps) => React.ReactElement;
@@ -34,6 +34,14 @@ export const tabBarIcons: IconsType = {
 	library: (props: IconProps) => (
 		<MaterialIcons
 			name="my-library-music"
+			size={24}
+			color={COLORS.textPrimary}
+			{...props}
+		/>
+	),
+	profile: (props: IconProps) => (
+		<MaterialIcons
+			name="people"
 			size={24}
 			color={COLORS.textPrimary}
 			{...props}
