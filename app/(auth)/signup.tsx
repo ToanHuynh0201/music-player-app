@@ -107,7 +107,7 @@ const SignUpScreen = () => {
 	};
 
 	const handleBackToLogin = () => {
-		router.back();
+		router.replace("/(auth)/login");
 	};
 
 	const getPasswordStrength = (password: string) => {

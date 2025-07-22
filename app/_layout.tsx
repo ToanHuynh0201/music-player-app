@@ -17,15 +17,33 @@ const StackLayout = () => {
 					paddingTop: insets.top,
 					backgroundColor: COLORS.background,
 				},
+				headerStyle: {
+					backgroundColor: COLORS.background,
+				},
+				animation: "none",
 			}}
-		></Stack>
+		>
+			<Stack.Screen
+				name="(auth)"
+				options={{
+					animation: "none",
+				}}
+			/>
+			<Stack.Screen
+				name="(tabs)"
+				options={{
+					animation: "fade",
+					animationDuration: 1000,
+				}}
+			/>
+		</Stack>
 	);
 };
 
 export default function RootLayout() {
 	return (
 		<SafeAreaProvider>
-			<StatusBar style="light" />
+			<StatusBar style="auto" />
 			<StackLayout></StackLayout>
 		</SafeAreaProvider>
 	);
