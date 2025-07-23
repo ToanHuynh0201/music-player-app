@@ -15,6 +15,7 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
+import Modal from "react-native-modal";
 
 const { width, height } = Dimensions.get("window");
 
@@ -23,6 +24,7 @@ const LoginScreen = () => {
 	const [password, setPassword] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+	const [isGoogleModalVisible, setIsGoogleModalVisible] = useState(false);
 
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 	const slideAnim = useRef(new Animated.Value(30)).current;
@@ -83,10 +85,20 @@ const LoginScreen = () => {
 	};
 
 	const handleSocialLogin = (provider: string) => {
-		Alert.alert(
-			"Social Login",
-			`Login with ${provider} will be implemented soon.`
-		);
+		if (provider === "Google") {
+			setIsGoogleModalVisible(true);
+		} else {
+			Alert.alert(
+				"Social Login",
+				`Login with ${provider} will be implemented soon.`
+			);
+		}
+	};
+
+	const handleGoogleLogin = () => {
+		setIsGoogleModalVisible(false);
+		// Thực hiện logic đăng nhập Google ở đây
+		Alert.alert("Google Login", "Đang thực hiện đăng nhập với Google...");
 	};
 
 	const handleSignUp = () => {
@@ -239,6 +251,68 @@ const LoginScreen = () => {
 					</Animated.View>
 				</ScrollView>
 			</KeyboardAvoidingView>
+
+			{/* Google Login Modal */}
+			<Modal
+				isVisible={isGoogleModalVisible}
+				onBackdropPress={() => setIsGoogleModalVisible(false)}
+				onBackButtonPress={() => setIsGoogleModalVisible(false)}
+				animationIn="slideInUp"
+				animationOut="slideOutDown"
+				backdropOpacity={0.7}
+				style={styles.modal}
+				coverScreen
+				swipeThreshold={100}
+				propagateSwipe
+				onSwipeComplete={() => setIsGoogleModalVisible(false)}
+				hasBackdrop
+			>
+				<View style={styles.modalContent}>
+					<View style={styles.modalHeader}>
+						<Text style={styles.modalTitle}>Google Login</Text>
+						<TouchableOpacity
+							onPress={() => setIsGoogleModalVisible(false)}
+							style={styles.closeButton}
+						>
+							<Text style={styles.closeButtonText}>✕</Text>
+						</TouchableOpacity>
+					</View>
+
+					<View style={styles.modalBody}>
+						<View style={styles.googleIcon}>
+							<Text style={styles.googleIconText}>G</Text>
+						</View>
+						<Text style={styles.modalDescription}>
+							Đăng nhập bằng tài khoản Google của bạn
+						</Text>
+					</View>
+
+					<View style={styles.modalFooter}>
+						<TouchableOpacity
+							style={styles.modalButton}
+							onPress={handleGoogleLogin}
+						>
+							<LinearGradient
+								colors={GRADIENTS.primaryButton}
+								style={styles.modalButtonGradient}
+								start={{ x: 0, y: 0 }}
+								end={{ x: 1, y: 0 }}
+							>
+								<Text style={styles.modalButtonText}>
+									Tiếp tục với Google
+								</Text>
+							</LinearGradient>
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							style={styles.cancelButton}
+							onPress={() => setIsGoogleModalVisible(false)}
+						>
+							<Text style={styles.cancelButtonText}>Hủy</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</Modal>
 		</LinearGradient>
 	);
 };
@@ -430,6 +504,100 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: "bold",
 	},
+	// Modal styles
+	modal: {
+		margin: 0,
+		flex: 1,
+		height: height,
+		justifyContent: "flex-end",
+	},
+	modalContent: {
+		backgroundColor: COLORS.surface,
+		borderTopLeftRadius: 20,
+		borderTopRightRadius: 20,
+		paddingHorizontal: 24,
+		paddingTop: 20,
+		paddingBottom: 40,
+		maxHeight: height * 0.6,
+	},
+	modalHeader: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginBottom: 24,
+		paddingBottom: 16,
+		borderBottomWidth: 1,
+		borderBottomColor: COLORS.border,
+	},
+	modalTitle: {
+		fontSize: 20,
+		fontWeight: "bold",
+		color: COLORS.textPrimary,
+	},
+	closeButton: {
+		width: 32,
+		height: 32,
+		borderRadius: 16,
+		backgroundColor: COLORS.border,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	closeButtonText: {
+		fontSize: 16,
+		color: COLORS.textSecondary,
+	},
+	modalBody: {
+		alignItems: "center",
+		marginBottom: 32,
+	},
+	googleIcon: {
+		width: 60,
+		height: 60,
+		borderRadius: 30,
+		backgroundColor: COLORS.primary,
+		justifyContent: "center",
+		alignItems: "center",
+		marginBottom: 16,
+	},
+	googleIconText: {
+		fontSize: 24,
+		fontWeight: "bold",
+		color: COLORS.textPrimary,
+	},
+	modalDescription: {
+		fontSize: 16,
+		color: COLORS.textSecondary,
+		textAlign: "center",
+		lineHeight: 22,
+	},
+	modalFooter: {
+		gap: 12,
+	},
+	modalButton: {
+		borderRadius: 12,
+		overflow: "hidden",
+	},
+	modalButtonGradient: {
+		paddingVertical: 16,
+		alignItems: "center",
+	},
+	modalButtonText: {
+		color: COLORS.textPrimary,
+		fontSize: 16,
+		fontWeight: "bold",
+	},
+	cancelButton: {
+		paddingVertical: 16,
+		alignItems: "center",
+		backgroundColor: "transparent",
+		borderWidth: 1,
+		borderColor: COLORS.border,
+		borderRadius: 12,
+	},
+	cancelButtonText: {
+		color: COLORS.textSecondary,
+		fontSize: 16,
+		fontWeight: "500",
+	},
 });
-
 export default LoginScreen;

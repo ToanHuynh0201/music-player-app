@@ -36,6 +36,13 @@ const StackLayout = () => {
 					animationDuration: 1000,
 				}}
 			/>
+			<Stack.Screen
+				name="(modals)/test"
+				options={{
+					animation: "fade",
+					animationDuration: 1000,
+				}}
+			/>
 		</Stack>
 	);
 };
