@@ -1,0 +1,292 @@
+export const SAMPLE_PLAYLISTS = [
+	{
+		id: "1",
+		title: "Liked Songs",
+		type: "liked" as const,
+		songCount: 247,
+		image: null,
+		isLiked: true,
+	},
+	{
+		id: "2",
+		title: "My Playlist #1",
+		type: "playlist" as const,
+		songCount: 23,
+		image: "https://picsum.photos/200/200?random=1",
+	},
+	{
+		id: "3",
+		title: "Chill Vibes",
+		type: "playlist" as const,
+		songCount: 45,
+		image: "https://picsum.photos/200/200?random=2",
+	},
+	{
+		id: "4",
+		title: "Workout Mix",
+		type: "playlist" as const,
+		songCount: 32,
+		image: "https://picsum.photos/200/200?random=3",
+	},
+	{
+		id: "5",
+		title: "Lo-Fi Study",
+		type: "playlist" as const,
+		songCount: 67,
+		image: "https://picsum.photos/200/200?random=4",
+	},
+	{
+		id: "6",
+		title: "Road Trip Hits",
+		type: "playlist" as const,
+		songCount: 89,
+		image: "https://picsum.photos/200/200?random=5",
+	},
+	{
+		id: "7",
+		title: "Late Night Jazz",
+		type: "playlist" as const,
+		songCount: 34,
+		image: "https://picsum.photos/200/200?random=6",
+	},
+	{
+		id: "8",
+		title: "Party Time",
+		type: "playlist" as const,
+		songCount: 56,
+		image: "https://picsum.photos/200/200?random=7",
+	},
+];
+
+export const SAMPLE_ALBUMS = [
+	{
+		id: "1",
+		title: "After Hours",
+		artist: "The Weeknd",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=8",
+		year: 2020,
+	},
+	{
+		id: "2",
+		title: "Future Nostalgia",
+		artist: "Dua Lipa",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=9",
+		year: 2020,
+	},
+	{
+		id: "3",
+		title: "Blinding Lights",
+		artist: "The Weeknd",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=10",
+		year: 2019,
+	},
+	{
+		id: "4",
+		title: "Positions",
+		artist: "Ariana Grande",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=11",
+		year: 2020,
+	},
+	{
+		id: "5",
+		title: "Folklore",
+		artist: "Taylor Swift",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=12",
+		year: 2020,
+	},
+	{
+		id: "6",
+		title: "Fine Line",
+		artist: "Harry Styles",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=13",
+		year: 2019,
+	},
+	{
+		id: "7",
+		title: "Circles",
+		artist: "Post Malone",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=14",
+		year: 2019,
+	},
+	{
+		id: "8",
+		title: "Divide",
+		artist: "Ed Sheeran",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=15",
+		year: 2017,
+	},
+	{
+		id: "9",
+		title: "Sour",
+		artist: "Olivia Rodrigo",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=16",
+		year: 2021,
+	},
+	{
+		id: "10",
+		title: "Planet Her",
+		artist: "Doja Cat",
+		type: "album" as const,
+		image: "https://picsum.photos/200/200?random=17",
+		year: 2021,
+	},
+];
+
+export const SAMPLE_ARTISTS = [
+	{
+		id: "1",
+		name: "The Weeknd",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=18",
+	},
+	{
+		id: "2",
+		name: "Dua Lipa",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=19",
+	},
+	{
+		id: "3",
+		name: "Ariana Grande",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=20",
+	},
+	{
+		id: "4",
+		name: "Taylor Swift",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=21",
+	},
+	{
+		id: "5",
+		name: "Harry Styles",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=22",
+	},
+	{
+		id: "6",
+		name: "Post Malone",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=23",
+	},
+	{
+		id: "7",
+		name: "Ed Sheeran",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=24",
+	},
+	{
+		id: "8",
+		name: "Olivia Rodrigo",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=25",
+	},
+	{
+		id: "9",
+		name: "Doja Cat",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=26",
+	},
+	{
+		id: "10",
+		name: "Billie Eilish",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=27",
+	},
+	{
+		id: "11",
+		name: "Drake",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=28",
+	},
+	{
+		id: "12",
+		name: "Bruno Mars",
+		type: "artist" as const,
+		image: "https://picsum.photos/200/200?random=29",
+	},
+];
+
+export const recentlyPlayed = [
+	{
+		id: "1",
+		title: "Blinding Lights",
+		artist: "The Weeknd",
+		image: "https://i.scdn.co/image/ab67616d0000b273473c5b1cac05d6e78e2ad6f7",
+		duration: "3:20",
+	},
+	{
+		id: "2",
+		title: "Watermelon Sugar",
+		artist: "Harry Styles",
+		image: "https://i.scdn.co/image/ab67616d0000b273adce4d44ca3b60ae98776470",
+		duration: "2:54",
+	},
+	{
+		id: "3",
+		title: "Levitating",
+		artist: "Dua Lipa",
+		image: "https://i.scdn.co/image/ab67616d0000b273c83fd3d3b9ad50f5b6b49040",
+		duration: "3:23",
+	},
+];
+
+export const featuredPlaylists = [
+	{
+		id: "1",
+		title: "Today's Top Hits",
+		description: "The most played songs right now",
+		image: "https://i.scdn.co/image/ab67706f00000003c13b4a1d98c91b9c3160c9e4",
+		songs: 50,
+	},
+	{
+		id: "2",
+		title: "RapCaviar",
+		description: "New music from Drake, Travis Scott and more",
+		image: "https://i.scdn.co/image/ab67706f00000003ee2eb4e7c8f2ee1e83bcb2b1",
+		songs: 65,
+	},
+];
+export const genres = [
+	{ id: "1", name: "Pop", color: "#FF6B6B" },
+	{ id: "2", name: "Hip-Hop", color: "#4ECDC4" },
+	{ id: "3", name: "Rock", color: "#45B7D1" },
+	{ id: "4", name: "Jazz", color: "#96CEB4" },
+	{ id: "5", name: "Classical", color: "#5b1b96" },
+	{ id: "6", name: "Electronic", color: "#DDA0DD" },
+];
+export const popularArtists = [
+	{
+		id: "1",
+		name: "Taylor Swift",
+		image: "https://i.scdn.co/image/ab6761610000e5eb859e4c14fa59296c8649e0e4",
+		followers: "89M",
+	},
+	{
+		id: "2",
+		name: "The Weeknd",
+		image: "https://i.scdn.co/image/ab6761610000e5eb214f3cf1cbe7139c1e26ffbb",
+		followers: "65M",
+	},
+	{
+		id: "3",
+		name: "Ariana Grande",
+		image: "https://i.scdn.co/image/ab6761610000e5eb40b5c07ab77b6b1a9075fdc0",
+		followers: "72M",
+	},
+	{
+		id: "4",
+		name: "Ed Sheeran",
+		image: "https://i.scdn.co/image/ab6761610000e5eb12a2ef08d00dd7451a6ee9e6",
+		followers: "45M",
+	},
+];
