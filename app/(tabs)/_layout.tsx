@@ -26,28 +26,28 @@ export default function TabLayout() {
 			}}
 		>
 			<Tabs.Screen
-				name="home"
+				name="(home)"
 				options={{
 					title: "Home",
 					sceneStyle: { backgroundColor: COLORS.background },
 				}}
 			></Tabs.Screen>
 			<Tabs.Screen
-				name="search"
+				name="(search)"
 				options={{
 					title: "Search",
 					sceneStyle: { backgroundColor: COLORS.background },
 				}}
 			></Tabs.Screen>
 			<Tabs.Screen
-				name="library"
+				name="(library)"
 				options={{
 					title: "Library",
 					sceneStyle: { backgroundColor: COLORS.background },
 				}}
 			></Tabs.Screen>
 			<Tabs.Screen
-				name="profile"
+				name="(profile)"
 				options={{
 					title: "Profile",
 					sceneStyle: { backgroundColor: COLORS.background },

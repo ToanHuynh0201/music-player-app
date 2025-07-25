@@ -74,7 +74,7 @@ const LoginScreen = () => {
 		// 		);
 		// 	}
 		// }, 1500);
-		router.replace("/(tabs)/home");
+		router.replace("/(tabs)/(home)");
 	};
 
 	const handleForgotPassword = () => {

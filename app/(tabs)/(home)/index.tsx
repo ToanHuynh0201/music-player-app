@@ -39,7 +39,7 @@ const Home = () => {
 	}, []);
 
 	const onProfilePress = () => {
-		router.navigate("/(tabs)/profile");
+		router.navigate("/(tabs)/(profile)");
 	};
 	return (
 		<View style={styles.container}>

@@ -8,14 +8,14 @@ export interface IconProps {
 	size?: number;
 }
 
-export type TabRouteNames = "home" | "search" | "library" | "profile";
+export type TabRouteNames = "(home)" | "(search)" | "(library)" | "(profile)";
 
 export type IconsType = {
 	[K in TabRouteNames]: (props: IconProps) => React.ReactElement;
 };
 
 export const tabBarIcons: IconsType = {
-	home: (props: IconProps) => (
+	"(home)": (props: IconProps) => (
 		<AntDesign
 			name="home"
 			size={24}
@@ -23,7 +23,7 @@ export const tabBarIcons: IconsType = {
 			{...props}
 		/>
 	),
-	search: (props: IconProps) => (
+	"(search)": (props: IconProps) => (
 		<AntDesign
 			name="search1"
 			size={24}
@@ -31,7 +31,7 @@ export const tabBarIcons: IconsType = {
 			{...props}
 		/>
 	),
-	library: (props: IconProps) => (
+	"(library)": (props: IconProps) => (
 		<MaterialIcons
 			name="my-library-music"
 			size={24}
@@ -39,7 +39,7 @@ export const tabBarIcons: IconsType = {
 			{...props}
 		/>
 	),
-	profile: (props: IconProps) => (
+	"(profile)": (props: IconProps) => (
 		<MaterialIcons
 			name="people"
 			size={24}
