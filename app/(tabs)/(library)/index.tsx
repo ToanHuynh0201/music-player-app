@@ -3,6 +3,7 @@ import LibraryItem from "@/components/LibraryItem";
 import Typo from "@/components/Typo";
 import { COLORS } from "@/constants/Colors";
 import { SAMPLE_ALBUMS, SAMPLE_ARTISTS, SAMPLE_PLAYLISTS } from "@/data";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
 	FlatList,
@@ -100,7 +101,10 @@ const Library = () => {
 						Your Library
 					</Typo>
 					<View style={styles.headerButtons}>
-						<TouchableOpacity style={styles.headerButton}>
+						<TouchableOpacity
+							style={styles.headerButton}
+							onPress={() => router.navigate("/(tabs)/(search)")}
+						>
 							<Typo size={18} color={COLORS.textPrimary}>
 								🔍
 							</Typo>

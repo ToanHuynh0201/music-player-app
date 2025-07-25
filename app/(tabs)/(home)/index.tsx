@@ -74,7 +74,9 @@ const Home = () => {
 				<View style={styles.section}>
 					<View style={styles.sectionHeader}>
 						<Text style={styles.sectionTitle}>Nghe gần đây</Text>
-						<TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => router.push("/(modals)/player")}
+						>
 							<Text style={styles.seeAllText}>Xem tất cả</Text>
 						</TouchableOpacity>
 					</View>

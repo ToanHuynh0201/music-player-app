@@ -37,10 +37,15 @@ const StackLayout = () => {
 				}}
 			/>
 			<Stack.Screen
-				name="(modals)/test"
+				name="(modals)/player"
 				options={{
-					animation: "fade",
-					animationDuration: 1000,
+					presentation: "transparentModal",
+					gestureEnabled: true,
+					gestureDirection: "vertical",
+					animation: "slide_from_bottom",
+					animationTypeForReplace: "pop",
+					animationDuration: 400,
+					headerShown: false,
 				}}
 			/>
 		</Stack>
