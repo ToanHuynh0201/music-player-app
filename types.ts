@@ -1,4 +1,4 @@
-import { TextProps, TextStyle } from "react-native";
+import { TextProps, TextStyle, ViewStyle } from "react-native";
 
 export type TypoProps = {
 	size?: number;
@@ -7,4 +7,9 @@ export type TypoProps = {
 	children: any | null;
 	style?: TextStyle;
 	textProps?: TextProps;
+};
+
+export type CloseButtonProps = {
+	style?: ViewStyle;
+	iconSize?: number;
 };

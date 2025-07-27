@@ -1,4 +1,5 @@
 // app/(modals)/player.tsx
+import CloseButton from "@/components/CloseButton";
 import { COLORS, GRADIENTS } from "@/constants/Colors";
 import { Track, useAudioStore } from "@/stores/audioStore";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -228,9 +229,7 @@ const Player = () => {
 			end={{ x: 1, y: 1 }}
 		>
 			{/* Close button */}
-			<TouchableOpacity style={styles.closeBtn} onPress={handleClose}>
-				<Text style={styles.closeText}>✕</Text>
-			</TouchableOpacity>
+			<CloseButton style={styles.closeBtn} iconSize={30} />
 
 			{/* Cover Art */}
 			<Image source={{ uri: trackData.cover }} style={styles.cover} />
@@ -395,10 +394,6 @@ const styles = StyleSheet.create({
 		right: 24,
 		zIndex: 10,
 		padding: 8,
-	},
-	closeText: {
-		fontSize: 24,
-		color: COLORS.textPrimary,
 	},
 	cover: {
 		width: width * 0.7,
