@@ -34,6 +34,12 @@ export default function TabLayout() {
 					animation: "none",
 				}}
 			/>
+			<Stack.Screen
+				name="resetPassword"
+				options={{
+					animation: "none",
+				}}
+			/>
 		</Stack>
 	);
 }

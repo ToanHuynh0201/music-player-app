@@ -1,17 +1,16 @@
 import CustomTextInput from "@/components/CustomTextInput";
+import Typo from "@/components/Typo";
 import { COLORS, GRADIENTS } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
 	Animated,
-	Dimensions,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from "react-native";
-
-const { height, width } = Dimensions.get("window");
 
 const ForgotPassword = () => {
 	const [email, setEmail] = useState("");
@@ -38,7 +37,12 @@ const ForgotPassword = () => {
 	}, []);
 
 	const handleSubmit = async () => {
-		setIsProcessing(true);
+		if (!isProcessing) {
+			setIsProcessing(true);
+			return;
+		}
+		router.navigate("/resetPassword");
+		setIsProcessing(false);
 	};
 
 	return (
@@ -110,9 +114,13 @@ const ForgotPassword = () => {
 							start={{ x: 0, y: 0 }}
 							end={{ x: 1, y: 0 }}
 						>
-							<Text style={styles.submitButtonText}>
+							<Typo
+								size={24}
+								fontWeight="600"
+								style={styles.submitButtonText}
+							>
 								{isLoading ? "Processing..." : "Continue"}
-							</Text>
+							</Typo>
 						</LinearGradient>
 					</TouchableOpacity>
 				</View>
