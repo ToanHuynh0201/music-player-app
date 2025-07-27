@@ -2,7 +2,7 @@ import CustomTextInput from "@/components/CustomTextInput";
 import { COLORS, GRADIENTS, getColorWithOpacity } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
 	Alert,
 	Animated,
@@ -29,7 +29,7 @@ const LoginScreen = () => {
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 	const slideAnim = useRef(new Animated.Value(30)).current;
 
-	React.useEffect(() => {
+	useEffect(() => {
 		Animated.parallel([
 			Animated.timing(fadeAnim, {
 				toValue: 1,
@@ -45,43 +45,11 @@ const LoginScreen = () => {
 	}, []);
 
 	const handleLogin = async () => {
-		// if (!email || !password) {
-		// 	Alert.alert("Error", "Please fill in all fields");
-		// 	return;
-		// }
-
-		// if (!email.includes("@")) {
-		// 	Alert.alert("Error", "Please enter a valid email address");
-		// 	return;
-		// }
-
-		// setIsLoading(true);
-
-		// // Simulate API call
-		// setTimeout(() => {
-		// 	setIsLoading(false);
-		// 	// Simple validation (in real app, this would be actual authentication)
-		// 	if (
-		// 		email.toLowerCase().includes("test") ||
-		// 		email.toLowerCase().includes("demo")
-		// 	) {
-		// 		// Navigate to main app (you can replace this with your main tabs)
-		// 		router.replace("/(tabs)/home");
-		// 	} else {
-		// 		Alert.alert(
-		// 			"Login Failed",
-		// 			'Please use a test email or try "demo@example.com"'
-		// 		);
-		// 	}
-		// }, 1500);
 		router.replace("/(tabs)/(home)");
 	};
 
 	const handleForgotPassword = () => {
-		Alert.alert(
-			"Forgot Password",
-			"Password reset link will be sent to your email."
-		);
+		router.navigate("/forgotPassword");
 	};
 
 	const handleSocialLogin = (provider: string) => {

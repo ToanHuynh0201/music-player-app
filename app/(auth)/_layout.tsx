@@ -28,6 +28,12 @@ export default function TabLayout() {
 					animation: "none",
 				}}
 			/>
+			<Stack.Screen
+				name="forgotPassword"
+				options={{
+					animation: "none",
+				}}
+			/>
 		</Stack>
 	);
 }

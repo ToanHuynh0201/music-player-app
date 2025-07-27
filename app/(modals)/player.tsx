@@ -1,9 +1,9 @@
 // app/(modals)/player.tsx
 import CloseButton from "@/components/CloseButton";
+import ControlButton from "@/components/ControlButton";
 import { COLORS, GRADIENTS } from "@/constants/Colors";
 import { Track, useAudioStore } from "@/stores/audioStore";
 import Entypo from "@expo/vector-icons/Entypo";
-import Foundation from "@expo/vector-icons/Foundation";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Slider from "@react-native-community/slider";
 import { LinearGradient } from "expo-linear-gradient";
@@ -201,8 +201,6 @@ const Player = () => {
 		}
 	};
 
-	const handleClose = () => router.back();
-
 	const formatTime = (sec: number): string => {
 		const minutes = Math.floor(sec / 60);
 		const seconds = Math.floor(sec % 60);
@@ -321,59 +319,7 @@ const Player = () => {
 			</View>
 
 			{/* Controls */}
-			<View style={styles.controls}>
-				<TouchableOpacity
-					onPress={playPrevious}
-					disabled={!currentTrack}
-				>
-					<Foundation
-						name="previous"
-						style={[
-							styles.controlIcon,
-							{ opacity: currentTrack ? 1 : 0.5 },
-						]}
-						size={48}
-						color={COLORS.textPrimary}
-					/>
-				</TouchableOpacity>
-
-				<TouchableOpacity
-					onPress={handlePlayPause}
-					disabled={!currentTrack || isLoading}
-				>
-					{isLoading ? (
-						<Text style={[styles.controlIcon, { fontSize: 48 }]}>
-							⏳
-						</Text>
-					) : isPlaying ? (
-						<Foundation
-							name="pause"
-							style={styles.controlIcon}
-							size={48}
-							color={COLORS.textPrimary}
-						/>
-					) : (
-						<Foundation
-							name="play"
-							style={styles.controlIcon}
-							size={48}
-							color={COLORS.textPrimary}
-						/>
-					)}
-				</TouchableOpacity>
-
-				<TouchableOpacity onPress={playNext} disabled={!currentTrack}>
-					<Foundation
-						name="next"
-						style={[
-							styles.controlIcon,
-							{ opacity: currentTrack ? 1 : 0.5 },
-						]}
-						size={48}
-						color={COLORS.textPrimary}
-					/>
-				</TouchableOpacity>
-			</View>
+			<ControlButton />
 		</LinearGradient>
 	);
 };
