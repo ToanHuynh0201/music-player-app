@@ -47,7 +47,6 @@ interface AudioState {
 
 // Audio Store
 export const useAudioStore = create<AudioState>((set, get) => ({
-	// State
 	sound: null,
 	currentTrack: null,
 	isPlaying: false,
@@ -61,126 +60,75 @@ export const useAudioStore = create<AudioState>((set, get) => ({
 	queue: [],
 	currentIndex: 0,
 
-	// Actions
 	initializeAudio: async () => {
-		try {
-			await Audio.setAudioModeAsync({
-				allowsRecordingIOS: false,
-				staysActiveInBackground: true,
-				playsInSilentModeIOS: true,
-				shouldDuckAndroid: true,
-				playThroughEarpieceAndroid: false,
-			});
-		} catch (error) {
-			console.error("Error initializing audio:", error);
-		}
+		await Audio.setAudioModeAsync({
+			allowsRecordingIOS: false,
+			staysActiveInBackground: true,
+			playsInSilentModeIOS: true,
+			shouldDuckAndroid: true,
+			playThroughEarpieceAndroid: false,
+		});
 	},
 
 	loadTrack: async (track: Track) => {
-		const { sound: currentSound } = get();
 		set({ isLoading: true });
-
-		try {
-			// Unload previous sound
-			if (currentSound) {
-				await currentSound.unloadAsync();
-			}
-
-			// Load new sound
-			const { sound: newSound } = await Audio.Sound.createAsync(
-				{ uri: track.uri },
-				{ shouldPlay: false, volume: get().volume },
-				(status) => {
-					if (status.isLoaded) {
-						// Smooth position updates - only update if significant change
-						const currentPosition = get().position;
-						const newPosition = status.positionMillis || 0;
-						const positionDiff = Math.abs(
-							newPosition - currentPosition
-						);
-
-						// Only update if difference is more than 500ms to avoid jittery updates
-						if (positionDiff > 500) {
-							set({
-								position: newPosition,
-								duration: status.durationMillis || 0,
-								isPlaying: status.isPlaying || false,
-								isLoading: status.isBuffering || false,
-							});
-						} else {
-							// Just update duration and playing state, not position
-							set({
-								duration: status.durationMillis || 0,
-								isPlaying: status.isPlaying || false,
-								isLoading: status.isBuffering || false,
-							});
-						}
-
-						// Handle playback completion
-						if (status.didJustFinish && !status.isLooping) {
-							get().handleTrackEnd();
-						}
-					}
-				}
-			);
-
-			set({
-				sound: newSound,
-				currentTrack: track,
-				isLoading: false,
-			});
-			await get().play(); // Tự động phát nhạc sau khi load
-		} catch (error) {
-			console.error("Error loading track:", error);
-			set({ isLoading: false });
+		const prevSound = get().sound;
+		if (prevSound) {
+			await prevSound.unloadAsync();
 		}
+		const { sound } = await Audio.Sound.createAsync(
+			{ uri: track.uri },
+			{ shouldPlay: false }
+		);
+		sound.setOnPlaybackStatusUpdate((status) => {
+			if (status.isLoaded) {
+				set({
+					position: status.positionMillis || 0,
+					duration: status.durationMillis || 0,
+					isPlaying: status.isPlaying || false,
+					isLoading: status.isBuffering || false,
+				});
+			}
+		});
+		set({
+			sound,
+			currentTrack: track,
+			isLoading: false,
+			position: 0,
+			duration: track.duration * 1000,
+			isPlaying: false,
+		});
 	},
 
 	play: async () => {
-		const { sound } = get();
+		const sound = get().sound;
 		if (sound) {
-			try {
-				await sound.playAsync();
-				set({ isPlaying: true });
-			} catch (error) {
-				console.error("Error playing:", error);
-			}
+			await sound.playAsync();
+			set({ isPlaying: true });
 		}
 	},
 
 	pause: async () => {
-		const { sound } = get();
+		const sound = get().sound;
 		if (sound) {
-			try {
-				await sound.pauseAsync();
-				set({ isPlaying: false });
-			} catch (error) {
-				console.error("Error pausing:", error);
-			}
+			await sound.pauseAsync();
+			set({ isPlaying: false });
 		}
 	},
 
 	seekTo: async (positionMillis: number) => {
-		const { sound } = get();
+		const sound = get().sound;
 		if (sound) {
-			try {
-				await sound.setPositionAsync(positionMillis);
-				set({ position: positionMillis });
-			} catch (error) {
-				console.error("Error seeking:", error);
-			}
+			await sound.setPositionAsync(positionMillis);
+			set({ position: positionMillis });
 		}
 	},
 
 	setVolume: async (volume: number) => {
-		const { sound } = get();
+		const sound = get().sound;
 		if (sound) {
-			try {
-				await sound.setVolumeAsync(volume);
-				set({ volume });
-			} catch (error) {
-				console.error("Error setting volume:", error);
-			}
+			await sound.setVolumeAsync(volume);
+			set({ volume });
 		}
 	},
 
@@ -197,67 +145,30 @@ export const useAudioStore = create<AudioState>((set, get) => ({
 	},
 
 	toggleRepeat: () => {
-		const { repeatMode } = get();
-		if (repeatMode === "off") {
-			set({ repeatMode: "all" });
-		} else if (repeatMode === "all") {
-			set({ repeatMode: "one" });
-		} else {
-			set({ repeatMode: "off" });
-		}
+		set((state) => ({
+			repeatMode:
+				state.repeatMode === "off"
+					? "one"
+					: state.repeatMode === "one"
+					? "all"
+					: "off",
+		}));
 	},
 
 	setQueue: (tracks: Track[]) => {
-		set({ queue: tracks, currentIndex: 0 });
+		set({ queue: tracks });
 	},
 
 	playNext: async () => {
-		const { queue, currentIndex, isShuffle } = get();
-
-		if (queue.length === 0) return;
-
-		let nextIndex: number;
-		if (isShuffle) {
-			nextIndex = Math.floor(Math.random() * queue.length);
-		} else {
-			nextIndex = (currentIndex + 1) % queue.length;
-		}
-
-		set({ currentIndex: nextIndex });
-		await get().loadTrack(queue[nextIndex]);
+		// Chưa xử lý, để rỗng hoặc thêm logic sau
 	},
 
 	playPrevious: async () => {
-		const { queue, currentIndex } = get();
-
-		if (queue.length === 0) return;
-
-		const prevIndex =
-			currentIndex === 0 ? queue.length - 1 : currentIndex - 1;
-		set({ currentIndex: prevIndex });
-		await get().loadTrack(queue[prevIndex]);
+		// Chưa xử lý, để rỗng hoặc thêm logic sau
 	},
 
 	handleTrackEnd: async () => {
-		const { repeatMode } = get();
-
-		switch (repeatMode) {
-			case "one":
-				await get().seekTo(0);
-				await get().play();
-				break;
-			case "all":
-				await get().playNext();
-				break;
-			default:
-				const { queue, currentIndex } = get();
-				if (currentIndex < queue.length - 1) {
-					await get().playNext();
-				} else {
-					set({ isPlaying: false, position: 0 });
-				}
-				break;
-		}
+		// Chưa xử lý, để rỗng hoặc thêm logic sau
 	},
 
 	updatePosition: (position: number) => {
@@ -265,20 +176,11 @@ export const useAudioStore = create<AudioState>((set, get) => ({
 	},
 
 	cleanup: async () => {
-		const { sound } = get();
+		const sound = get().sound;
 		if (sound) {
-			try {
-				await sound.unloadAsync();
-			} catch (error) {
-				console.error("Error cleaning up:", error);
-			}
+			await sound.unloadAsync();
+			set({ sound: null });
 		}
-		set({
-			sound: null,
-			currentTrack: null,
-			isPlaying: false,
-			position: 0,
-		});
 	},
 }));
 
