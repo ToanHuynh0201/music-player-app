@@ -9,6 +9,7 @@
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
 		"ios": {
+			"bundleIdentifier": "com.yourcompany.musicplayerapp",
 			"supportsTablet": true
 		},
 		"android": {
@@ -20,7 +21,20 @@
 			"edgeToEdgeEnabled": true,
 			"softwareKeyboardLayoutMode": "pan",
 			"hardwareAccelerated": true,
-			"windowSoftInputMode": "adjustResize"
+			"windowSoftInputMode": "adjustResize",
+			"package": "com.yourcompany.musicplayerapp",
+			"intentFilters": [
+				{
+					"action": "VIEW",
+					"autoVerify": true,
+					"data": [
+						{
+							"scheme": "musicplayerapp"
+						}
+					],
+					"category": ["BROWSABLE", "DEFAULT"]
+				}
+			]
 		},
 		"web": {
 			"bundler": "metro",
