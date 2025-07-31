@@ -14,7 +14,6 @@ if (Platform.OS === "web") {
 
 // Spotify OAuth configuration
 const SPOTIFY_CLIENT_ID = "066b93b708ef4bfb99ee25877296b19b";
-const SPOTIFY_CLIENT_SECRET = "your_client_secret_here"; // Get this from Spotify dashboard
 
 // Scopes for Spotify API access
 const SCOPES = [
@@ -46,26 +45,10 @@ export interface SpotifyTokens {
 	expiresIn: number;
 	tokenType: string;
 	scope: string;
-}
-
-export interface SpotifyUser {
-	id: string;
-	display_name: string;
-	email: string;
-	images: Array<{
-		url: string;
-		height: number;
-		width: number;
-	}>;
-	followers: {
-		total: number;
-	};
-	country: string;
-	product: string;
+	expiresAt?: number;
 }
 
 class SpotifyAuthService {
-	private request: AuthSession.AuthRequest | null = null;
 	private redirectUri: string;
 
 	constructor() {
@@ -73,90 +56,30 @@ class SpotifyAuthService {
 		this.redirectUri = makeRedirectUri({
 			scheme: "musicplayerapp",
 			path: "auth",
-			// Fallback for development
-			preferLocalhost: true,
 		});
 
 		console.log("🔗 Redirect URI:", this.redirectUri);
-
-		// Additional logging for debugging
 		console.log("🏗️ Development mode:", __DEV__);
 		console.log("📱 Platform:", Platform.OS);
 	}
 
-	// Initialize the auth request
-	private createAuthRequest() {
-		if (!this.request) {
-			this.request = new AuthSession.AuthRequest({
-				clientId: SPOTIFY_CLIENT_ID,
-				scopes: SCOPES,
-				usePKCE: true,
-				redirectUri: this.redirectUri,
-				responseType: AuthSession.ResponseType.Code,
-			});
-		}
-		return this.request;
-	}
-
-	// Initiate Spotify login
-	async login(): Promise<SpotifyTokens | null> {
-		try {
-			const request = this.createAuthRequest();
-
-			console.log(
-				"🚀 Starting Spotify auth with redirect URI:",
-				this.redirectUri
-			);
-
-			// Start the authentication flow
-			const result = await request.promptAsync(discovery);
-
-			console.log("🔐 Auth result:", result.type);
-
-			if (result.type === "success" && result.params.code) {
-				console.log(
-					"✅ Authorization successful, exchanging code for tokens..."
-				);
-
-				// Exchange authorization code for access token
-				const tokens = await this.exchangeCodeForTokens(
-					result.params.code,
-					request.codeVerifier!
-				);
-
-				if (tokens) {
-					console.log("🎉 Tokens received successfully");
-					// Store tokens securely
-					await this.storeTokens(tokens);
-					return tokens;
-				}
-			} else if (result.type === "error") {
-				console.error("❌ Auth error:", result.error);
-				if (result.error?.message?.includes("INVALID_CLIENT")) {
-					throw new Error(
-						"Invalid redirect URI. Please check Spotify app configuration."
-					);
-				}
-				throw new Error(
-					result.error?.message || "Authentication failed"
-				);
-			} else if (result.type === "cancel") {
-				console.log("👤 User cancelled authentication");
-				return null;
-			}
-
-			return null;
-		} catch (error) {
-			console.error("💥 Spotify login error:", error);
-			throw error;
-		}
+	// Get auth configuration for components
+	getAuthConfig() {
+		return {
+			clientId: SPOTIFY_CLIENT_ID,
+			scopes: SCOPES,
+			usePKCE: true,
+			redirectUri: this.redirectUri,
+			responseType: AuthSession.ResponseType.Code,
+			discovery,
+		};
 	}
 
 	// Exchange authorization code for access token
-	private async exchangeCodeForTokens(
+	async exchangeCodeForTokens(
 		code: string,
 		codeVerifier: string
-	): Promise<SpotifyTokens | null> {
+	): Promise<SpotifyTokens> {
 		try {
 			const tokenRequestParams = {
 				grant_type: "authorization_code",
@@ -166,6 +89,8 @@ class SpotifyAuthService {
 				code_verifier: codeVerifier,
 			};
 
+			console.log("📡 Making token request...");
+
 			const response = await fetch(discovery.tokenEndpoint, {
 				method: "POST",
 				headers: {
@@ -177,29 +102,46 @@ class SpotifyAuthService {
 			const data = await response.json();
 
 			if (response.ok) {
-				return {
+				const tokens: SpotifyTokens = {
 					accessToken: data.access_token,
 					refreshToken: data.refresh_token,
 					expiresIn: data.expires_in,
 					tokenType: data.token_type,
 					scope: data.scope,
+					expiresAt: Date.now() + data.expires_in * 1000,
 				};
+
+				// Store tokens automatically
+				await this.storeTokens(tokens);
+				console.log("✅ Tokens stored successfully");
+
+				return tokens;
 			} else {
 				console.error("Token exchange error:", data);
-				return null;
+				throw new Error(
+					data.error_description || "Token exchange failed"
+				);
 			}
 		} catch (error) {
 			console.error("Token exchange error:", error);
-			return null;
+			throw error;
 		}
 	}
 
 	// Refresh access token
-	async refreshToken(refreshToken: string): Promise<SpotifyTokens | null> {
+	async refreshToken(refreshToken?: string): Promise<SpotifyTokens> {
 		try {
+			// If no refresh token provided, try to get from storage
+			const currentRefreshToken =
+				refreshToken || (await this.getStoredTokens())?.refreshToken;
+
+			if (!currentRefreshToken) {
+				throw new Error("No refresh token available");
+			}
+
 			const tokenRequestParams = {
 				grant_type: "refresh_token",
-				refresh_token: refreshToken,
+				refresh_token: currentRefreshToken,
 				client_id: SPOTIFY_CLIENT_ID,
 			};
 
@@ -214,44 +156,47 @@ class SpotifyAuthService {
 			const data = await response.json();
 
 			if (response.ok) {
-				const tokens = {
+				const tokens: SpotifyTokens = {
 					accessToken: data.access_token,
-					refreshToken: data.refresh_token || refreshToken, // Keep old refresh token if new one not provided
+					refreshToken: data.refresh_token || currentRefreshToken,
 					expiresIn: data.expires_in,
 					tokenType: data.token_type,
 					scope: data.scope,
+					expiresAt: Date.now() + data.expires_in * 1000,
 				};
 
 				await this.storeTokens(tokens);
+				console.log("✅ Tokens refreshed successfully");
+
 				return tokens;
 			} else {
 				console.error("Token refresh error:", data);
-				return null;
+				throw new Error(
+					data.error_description || "Token refresh failed"
+				);
 			}
 		} catch (error) {
 			console.error("Token refresh error:", error);
-			return null;
+			// If refresh fails, clear stored tokens
+			await this.clearTokens();
+			throw error;
 		}
 	}
 
 	// Store tokens securely
 	private async storeTokens(tokens: SpotifyTokens): Promise<void> {
 		try {
-			const tokenData = {
-				...tokens,
-				expiresAt: Date.now() + tokens.expiresIn * 1000,
-			};
-
 			await AsyncStorage.setItem(
 				"spotify_tokens",
-				JSON.stringify(tokenData)
+				JSON.stringify(tokens)
 			);
 		} catch (error) {
 			console.error("Error storing tokens:", error);
+			throw error;
 		}
 	}
 
-	// Get stored tokens
+	// Get stored tokens and auto-refresh if needed
 	async getStoredTokens(): Promise<SpotifyTokens | null> {
 		try {
 			const tokensJson = await AsyncStorage.getItem("spotify_tokens");
@@ -259,101 +204,59 @@ class SpotifyAuthService {
 
 			const tokenData = JSON.parse(tokensJson);
 
-			// Check if token is expired
-			if (Date.now() >= tokenData.expiresAt) {
-				// Try to refresh the token
-				return await this.refreshToken(tokenData.refreshToken);
+			// Check if token is expired (with 5 minute buffer)
+			const bufferTime = 5 * 60 * 1000; // 5 minutes
+			if (
+				tokenData.expiresAt &&
+				Date.now() >= tokenData.expiresAt - bufferTime
+			) {
+				console.log("🔄 Token expired, refreshing...");
+				try {
+					return await this.refreshToken(tokenData.refreshToken);
+				} catch (error) {
+					console.error("Failed to refresh token:", error);
+					return null;
+				}
 			}
 
-			return {
-				accessToken: tokenData.accessToken,
-				refreshToken: tokenData.refreshToken,
-				expiresIn: tokenData.expiresIn,
-				tokenType: tokenData.tokenType,
-				scope: tokenData.scope,
-			};
+			return tokenData;
 		} catch (error) {
 			console.error("Error getting stored tokens:", error);
 			return null;
 		}
 	}
 
-	// Get current user profile
-	async getCurrentUser(accessToken: string): Promise<SpotifyUser | null> {
-		try {
-			const response = await fetch("https://api.spotify.com/v1/me", {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
-			});
-
-			if (response.ok) {
-				return await response.json();
-			} else {
-				console.error("Error fetching user profile:", response.status);
-				return null;
-			}
-		} catch (error) {
-			console.error("Error fetching user profile:", error);
-			return null;
-		}
+	// Get valid access token (auto-refresh if needed)
+	async getValidAccessToken(): Promise<string | null> {
+		const tokens = await this.getStoredTokens();
+		return tokens?.accessToken || null;
 	}
-
-	// Logout - clear stored tokens
-	async logout(): Promise<void> {
+	// Clear stored tokens
+	async clearTokens(): Promise<void> {
 		try {
 			await AsyncStorage.removeItem("spotify_tokens");
 			await AsyncStorage.removeItem("spotify_user");
+			console.log("🗑️ Tokens cleared");
 		} catch (error) {
-			console.error("Error during logout:", error);
+			console.error("Error clearing tokens:", error);
 		}
 	}
 
 	// Check if user is authenticated
 	async isAuthenticated(): Promise<boolean> {
 		const tokens = await this.getStoredTokens();
-		return tokens !== null;
+		return tokens !== null && !!tokens.accessToken;
 	}
 
-	// Make authenticated Spotify API request
-	async makeSpotifyRequest(
-		endpoint: string,
-		options: RequestInit = {}
-	): Promise<any> {
-		const tokens = await this.getStoredTokens();
+	// Logout - clear stored tokens
+	async logout(): Promise<void> {
+		await this.clearTokens();
+		console.log("👋 User logged out");
+	}
 
-		if (!tokens) {
-			throw new Error("No authentication tokens available");
-		}
-
-		const response = await fetch(`https://api.spotify.com/v1${endpoint}`, {
-			...options,
-			headers: {
-				Authorization: `Bearer ${tokens.accessToken}`,
-				"Content-Type": "application/json",
-				...options.headers,
-			},
-		});
-
-		if (response.status === 401) {
-			// Token might be expired, try to refresh
-			const newTokens = await this.refreshToken(tokens.refreshToken);
-			if (newTokens) {
-				// Retry the request with new token
-				return await fetch(`https://api.spotify.com/v1${endpoint}`, {
-					...options,
-					headers: {
-						Authorization: `Bearer ${newTokens.accessToken}`,
-						"Content-Type": "application/json",
-						...options.headers,
-					},
-				});
-			} else {
-				throw new Error("Authentication failed");
-			}
-		}
-
-		return response;
+	// Get redirect URI (for external use)
+	getRedirectUri(): string {
+		return this.redirectUri;
 	}
 }
 

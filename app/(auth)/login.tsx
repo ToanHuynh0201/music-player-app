@@ -1,5 +1,6 @@
 import { COLORS, GRADIENTS, getColorWithOpacity } from "@/constants/Colors";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { spotifyAuth } from "@/services/SpotifyAuth";
+import { spotifyService } from "@/services/SpotifyService";
 import * as AuthSession from "expo-auth-session";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -23,30 +24,6 @@ WebBrowser.maybeCompleteAuthSession();
 
 const { height } = Dimensions.get("window");
 
-// Spotify configuration
-const SPOTIFY_CLIENT_ID = "066b93b708ef4bfb99ee25877296b19b";
-const SCOPES = [
-	"user-read-email",
-	"user-read-private",
-	"user-library-read",
-	"user-library-modify",
-	"playlist-read-private",
-	"playlist-read-collaborative",
-	"playlist-modify-private",
-	"playlist-modify-public",
-	"user-read-recently-played",
-	"user-top-read",
-	"user-read-playback-state",
-	"user-modify-playback-state",
-	"user-read-currently-playing",
-	"streaming",
-];
-
-const discovery = {
-	authorizationEndpoint: "https://accounts.spotify.com/authorize",
-	tokenEndpoint: "https://accounts.spotify.com/api/token",
-};
-
 const LoginScreen = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -54,27 +31,25 @@ const LoginScreen = () => {
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 	const slideAnim = useRef(new Animated.Value(30)).current;
 
-	// Create redirect URI
-	const redirectUri = AuthSession.makeRedirectUri({
-		scheme: "musicplayerapp",
-		path: "auth",
-	});
+	// Get auth configuration from service
+	const authConfig = spotifyAuth.getAuthConfig();
 
-	// Use AuthSession hook
+	// Use AuthSession hook with config from service
 	const [request, response, promptAsync] = AuthSession.useAuthRequest(
 		{
-			clientId: SPOTIFY_CLIENT_ID,
-			scopes: SCOPES,
-			usePKCE: true,
-			redirectUri: redirectUri,
-			responseType: AuthSession.ResponseType.Code,
+			clientId: authConfig.clientId,
+			scopes: authConfig.scopes,
+			usePKCE: authConfig.usePKCE,
+			redirectUri: authConfig.redirectUri,
+			responseType: authConfig.responseType,
 		},
-		discovery
+		authConfig.discovery
 	);
 
-	console.log("🔗 Redirect URI:", redirectUri);
+	console.log("🔗 Redirect URI:", authConfig.redirectUri);
 
 	useEffect(() => {
+		// Animate entrance
 		Animated.parallel([
 			Animated.timing(fadeAnim, {
 				toValue: 1,
@@ -113,16 +88,10 @@ const LoginScreen = () => {
 
 	const checkExistingAuth = async () => {
 		try {
-			const tokensJson = await AsyncStorage.getItem("spotify_tokens");
-			if (tokensJson) {
-				const tokenData = JSON.parse(tokensJson);
-				// Check if token is still valid (not expired)
-				if (Date.now() < tokenData.expiresAt) {
-					console.log(
-						"🔄 User already authenticated, redirecting..."
-					);
-					router.replace("/(tabs)/(home)");
-				}
+			const isAuthenticated = await spotifyAuth.isAuthenticated();
+			if (isAuthenticated) {
+				console.log("🔄 User already authenticated, redirecting...");
+				router.replace("/(tabs)/(home)");
 			}
 		} catch (error) {
 			console.error("Error checking existing auth:", error);
@@ -139,23 +108,20 @@ const LoginScreen = () => {
 		try {
 			console.log("🔄 Exchanging code for tokens...");
 
-			// Exchange code for tokens
-			const tokens = await exchangeCodeForTokens(code, codeVerifier);
+			// Use auth service to exchange code for tokens
+			const tokens = await spotifyAuth.exchangeCodeForTokens(
+				code,
+				codeVerifier
+			);
 
 			if (tokens) {
 				console.log("✅ Tokens received, getting user profile...");
 
-				// Get user profile
-				const user = await getCurrentUser(tokens.accessToken);
+				// Use spotify service to get user profile
+				const user = await spotifyService.getCurrentUser();
 
 				if (user) {
 					console.log("✅ User profile received:", user.display_name);
-
-					// Store user profile
-					await AsyncStorage.setItem(
-						"spotify_user",
-						JSON.stringify(user)
-					);
 
 					// Navigate to main app
 					router.replace("/(tabs)/(home)");
@@ -175,80 +141,6 @@ const LoginScreen = () => {
 		}
 	};
 
-	const exchangeCodeForTokens = async (
-		code: string,
-		codeVerifier: string
-	) => {
-		try {
-			const tokenRequestParams = {
-				grant_type: "authorization_code",
-				code,
-				redirect_uri: redirectUri,
-				client_id: SPOTIFY_CLIENT_ID,
-				code_verifier: codeVerifier,
-			};
-
-			console.log("📡 Making token request...");
-
-			const response = await fetch(discovery.tokenEndpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
-				body: new URLSearchParams(tokenRequestParams).toString(),
-			});
-
-			const data = await response.json();
-
-			if (response.ok) {
-				const tokens = {
-					accessToken: data.access_token,
-					refreshToken: data.refresh_token,
-					expiresIn: data.expires_in,
-					tokenType: data.token_type,
-					scope: data.scope,
-					expiresAt: Date.now() + data.expires_in * 1000,
-				};
-
-				// Store tokens
-				await AsyncStorage.setItem(
-					"spotify_tokens",
-					JSON.stringify(tokens)
-				);
-
-				return tokens;
-			} else {
-				console.error("Token exchange error:", data);
-				throw new Error(
-					data.error_description || "Token exchange failed"
-				);
-			}
-		} catch (error) {
-			console.error("Token exchange error:", error);
-			throw error;
-		}
-	};
-
-	const getCurrentUser = async (accessToken: string) => {
-		try {
-			const response = await fetch("https://api.spotify.com/v1/me", {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
-			});
-
-			if (response.ok) {
-				return await response.json();
-			} else {
-				console.error("Error fetching user profile:", response.status);
-				throw new Error("Failed to fetch user profile");
-			}
-		} catch (error) {
-			console.error("Error fetching user profile:", error);
-			throw error;
-		}
-	};
-
 	const handleSpotifyLogin = async () => {
 		if (!request) {
 			console.error("❌ Auth request not ready");
@@ -262,7 +154,7 @@ const LoginScreen = () => {
 		try {
 			console.log("🚀 Starting Spotify auth...");
 			console.log("📱 Platform:", Platform.OS);
-			console.log("🔗 Using redirect URI:", redirectUri);
+			console.log("🔗 Using redirect URI:", authConfig.redirectUri);
 
 			// Start the authentication flow
 			const result = await promptAsync({
@@ -281,10 +173,6 @@ const LoginScreen = () => {
 				[{ text: "OK" }]
 			);
 		}
-	};
-
-	const handleSignUp = () => {
-		router.push("/signup");
 	};
 
 	return (
@@ -314,50 +202,10 @@ const LoginScreen = () => {
 					>
 						{/* Header */}
 						<View style={styles.header}>
-							<View style={styles.logoContainer}>
-								<View style={styles.logo}>
-									<Text style={styles.logoText}>♪</Text>
-								</View>
+							<View style={styles.spotifyLogo}>
+								<Text style={styles.spotifyLogoText}>♫</Text>
 							</View>
-							<Text style={styles.title}>Welcome to Music</Text>
-							<Text style={styles.subtitle}>
-								Connect with Spotify to start listening
-							</Text>
-						</View>
-
-						{/* Error Message */}
-						{error && (
-							<View style={styles.errorContainer}>
-								<Text style={styles.errorText}>{error}</Text>
-							</View>
-						)}
-
-						{/* Debug Info (only in development) */}
-						{__DEV__ && (
-							<View style={styles.debugContainer}>
-								<Text style={styles.debugText}>
-									Platform: {Platform.OS}
-								</Text>
-								<Text style={styles.debugText}>
-									Redirect: {redirectUri}
-								</Text>
-								<Text style={styles.debugText}>
-									Request Ready: {request ? "✅" : "❌"}
-								</Text>
-							</View>
-						)}
-
-						{/* Spotify Login Section */}
-						<View style={styles.loginSection}>
-							{/* Spotify Logo */}
-							<View style={styles.spotifyLogoContainer}>
-								<View style={styles.spotifyLogo}>
-									<Text style={styles.spotifyLogoText}>
-										♫
-									</Text>
-								</View>
-								<Text style={styles.spotifyText}>Spotify</Text>
-							</View>
+							<Text style={styles.spotifyText}>Spotify</Text>
 
 							{/* Description */}
 							<Text style={styles.description}>
@@ -643,21 +491,6 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		textAlign: "center",
 		lineHeight: 18,
-	},
-	footer: {
-		flexDirection: "row",
-		justifyContent: "center",
-		alignItems: "center",
-		marginTop: 16,
-	},
-	footerText: {
-		color: COLORS.textSecondary,
-		fontSize: 14,
-	},
-	signUpText: {
-		color: COLORS.primary,
-		fontSize: 14,
-		fontWeight: "bold",
 	},
 });
 
